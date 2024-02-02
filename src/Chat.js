@@ -6,7 +6,18 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 import MicNoneOutlinedIcon from "@mui/icons-material/MicNoneOutlined";
-function Chat() {
+import formatDistanceToNow from "date-fns/formatDistanceToNow";
+import { useState } from "react";
+import axiosInstance from './axios';
+ 
+
+function Chat({messages}) {
+  const [message, setMessage] = useState('');
+  const sendMessage = async (e) => {
+    e.preventDefault();
+    await axiosInstance.post('/messages/new', { message, name: "mohamed saleh", received: false});
+    setMessage('');
+  }
   return (
     <div className="chat">
       <div className="chat_header">
@@ -31,21 +42,14 @@ function Chat() {
       </div>
 
       <div className="chat_body">
-        <p className="chat_message">
+        { messages.length > 0  && messages.map((message, index) => (
+          <p key={index} className={ `chat_message ${message.received && 'chat_reciever'}`}>
           {" "}
-          <span className="chat_name">Mohamed</span> this is a message{" "}
-          <span className="chat_timestamp">{new Date().toUTCString()}</span>
+          <span className="chat_name">{message.name}</span>{message.message}
+          <span className="chat_timestamp">{formatDistanceToNow(new Date(message.createdAt), { addSuffix: true})}</span>
         </p>
-        <p className=" chat_message chat_reciever">
-          {" "}
-          <span className="chat_name">Mohamed</span> this is a message{" "}
-          <span className="chat_timestamp">{new Date().toUTCString()}</span>
-        </p>
-        <p className="chat_message">
-          {" "}
-          <span className="chat_name">Mohamed</span> this is a message{" "}
-          <span className="chat_timestamp">{new Date().toUTCString()}</span>
-        </p>
+        ))}
+        
       </div>
 
       <div className="chat_footer">
@@ -54,8 +58,8 @@ function Chat() {
         </IconButton>
 
         <form>
-          <input type="text" placeholder="Type a message" />
-          <button type="submit">Send a message</button>
+          <input type="text" placeholder="Type a message" value={message} onChange={(e) => setMessage(e.target.value)} />
+          <button type="submit" onClick={sendMessage}>Send a message</button>
         </form>
         <IconButton>
           <MicNoneOutlinedIcon className="footer_icon" />

@@ -31,12 +31,12 @@ function App() {
       channel.unsubscribe('messages');
     }
   }, [messages]);
-  console.log(messages);
+  // console.log(messages);
   return (
     <div className="app">
       <div className="app_body">
         <Sidebar />
-        <Chat />
+        <Chat messages={messages}/>
       </div>
     </div>
   );
